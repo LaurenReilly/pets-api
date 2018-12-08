@@ -35,6 +35,14 @@ var owners = [
     }
 ];
 
+//function to search for the index of the object with the specific id key instead of doing this by index of the array as the :id value
+function search(idKey, array){
+    for (var i=0; i < array.length; i++) {
+        if (array[i].id === idKey) {
+            return i;
+        }
+    }
+}
 
 // GET /api/owners
 app.get('/api/owners', function(req, res, next) {
@@ -43,7 +51,9 @@ app.get('/api/owners', function(req, res, next) {
 
 // GET /api/owners/:id
 app.get('/api/owners/:id', function(req, res, next) {
-    res.send(owners[req.params.id]);      
+    let id = Number(req.params.id);
+    let index = search(id, owners);
+    res.send(owners[index]);      
 });
 
 // POST /api/owners
@@ -54,43 +64,67 @@ app.post('/api/owners', function(req, res) {
 
 // PUT /api/owners/:id
 app.put('/api/owners/:id', function(req, res, next) {
-    owners[req.params.id] = req.body;
+    let id = Number(req.params.id);
+    let index = search(id, owners);
+    owners[index] = req.body;
     res.send(owners);
 });
 
 // DELETE /api/owners/:id
 app.delete('/api/owners/:id', function(req, res, next) {
-    var index = req.params.id;
+    let id = Number(req.params.id);
+    let index = search(id, owners);
     owners.splice(index, 1);
     res.send(owners);
 });
 
 // GET /api/owners/:id/pets
-app.get('/api/owners/:id', function(req, res, next) {
-    res.send(owners[req.params.id].pets);      
+app.get('/api/owners/:id/pets', function(req, res, next) {
+    let id = Number(req.params.id);
+    let index = search(id, owners);
+    res.send(owners[index].pets);      
 });
 
 // GET /api/owners/:id/pets/:petId
 app.get('/api/owners/:id/pets/:petId', function(req, res, next) {
-    res.send(owners[req.params.id].pets[req.params.petId]);      
+    let idOwner = Number(req.params.id);
+    let indexOwner = search(idOwner, owners);
+
+    let idPet = Number(req.params.petId);
+    let indexPet = search(idPet, owners[indexOwner].pets);
+
+    res.send(owners[indexOwner].pets[indexPet]);      
 });
 
 // POST /api/owners/:id/pets
 app.post('/api/owners/:id/pets', function(req, res, next) {
-    owners[req.params.id].pets.push(req.body)
+    let idOwner = Number(req.params.id);
+    let indexOwner = search(idOwner, owners);
+
+    owners[indexOwner].pets.push(req.body)
     res.send(owners);
  });
 
 // PUT /api/owners/:id/pets/:petId
 app.put('/api/owners/:id/pets/:petId', function(req, res, next) {
-    owners[req.params.id].pets[req.params.petId] = req.body;
+    let idOwner = Number(req.params.id);
+    let indexOwner = search(idOwner, owners);
+
+    let idPet = Number(req.params.petId);
+    let indexPet = search(idPet, owners[indexOwner].pets);
+
+    owners[indexOwner].pets[indexPet] = req.body;
     res.send(owners);
 });
 
 // DELETE /api/owners/:id/pets/:petId
 app.delete('/api/owners/:id/pets/:petId', function(req, res, next) {
-    var indexOwner = req.params.id;
-    var indexPet = req.params.petId;
+    let idOwner = Number(req.params.id);
+    let indexOwner = search(idOwner, owners);
+
+    let idPet = Number(req.params.petId);
+    let indexPet = search(idPet, owners[indexOwner].pets);
+    
     owners[indexOwner].pets[indexPet].splice(index, 1);
     res.send(owners);
 });
